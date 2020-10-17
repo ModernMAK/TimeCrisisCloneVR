@@ -3,12 +3,14 @@ using UnityEngine;
 
 public interface IGun
 {
+    AmmoState AmmoState { get; }
+    
     bool CanFire { get; }
     bool CanReload { get; }
-    bool HasBullets { get; }
-    bool MagazineFull { get; }
+    
     void Reload();
     void Fire(Vector3 spawnPosition, Quaternion orientation);
+
     event EventHandler Reloading;
     event EventHandler<FiredEventArgs> Fired;
     event EventHandler ReloadingStarted;

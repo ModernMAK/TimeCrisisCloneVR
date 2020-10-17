@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GunBehaviour : MonoBehaviour, IGun
 {
+    #pragma warning disable 649
     [SerializeField] private Gun _gun;
     [SerializeField] private GunData _gunData;
     [SerializeField] private bool _allowTargetingAssist;
@@ -15,6 +16,13 @@ public class GunBehaviour : MonoBehaviour, IGun
     [SerializeField] private Transform _transform;
 
     [SerializeField] private bool _reloading;
+    #pragma warning restore 649
+    
+    private void Awake()
+    {
+        _gun = new Gun();
+    }
+
     private void Start()
     {
         _gun.Initialize(_gunData);
@@ -50,13 +58,12 @@ public class GunBehaviour : MonoBehaviour, IGun
         _gun.OnDrawGizmos();
     }
 
+    public AmmoState AmmoState => _gun.AmmoState;
+
     public bool CanFire => _gun.CanFire;
 
     public bool CanReload => _gun.CanReload;
 
-    public bool HasBullets => _gun.HasBullets;
-
-    public bool MagazineFull => _gun.MagazineFull;
 
     public void Reload()
     {
@@ -96,4 +103,5 @@ public class GunBehaviour : MonoBehaviour, IGun
         add => _gun.FiredEmpty += value;
         remove => _gun.FiredEmpty -= value;
     }
+
 }

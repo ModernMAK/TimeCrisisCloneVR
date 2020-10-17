@@ -3,8 +3,9 @@
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: SpatializerMixer
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300001}
@@ -25,17 +26,18 @@ AudioMixerController:
 --- !u!243 &24300001
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Master
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 725e77d6ee2433b4388bc90340f64b61
   m_Children: []
   m_Volume: 0658889d5c88bf940b82d78b8d39562e
   m_Pitch: 0d4bed6fb113d6f4089b817171a98447
+  m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 24400002}
-  - {fileID: 24482754}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
@@ -43,8 +45,9 @@ AudioMixerGroupController:
 --- !u!244 &24400002
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_EffectID: 42ec3f1ef4a750c4386011c7d2e2a267
   m_EffectName: Attenuation
@@ -53,52 +56,12 @@ AudioMixerEffectController:
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
---- !u!244 &24482754
-AudioMixerEffectController:
-  m_ObjectHideFlags: 3
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: 
-  m_EffectID: 1d0f44df94bc52146b502b66296662ae
-  m_EffectName: OculusSpatializerReflection
-  m_MixLevel: a5b6bd72526f2e44ab339b0cad35a895
-  m_Parameters:
-  - m_ParameterName: E.Rflt On
-    m_GUID: c37752d75bf132d47a7c3a93049722dc
-  - m_ParameterName: E.Rflt Rev On
-    m_GUID: f4fa4509dbcb99d46a3b47fb214a8e04
-  - m_ParameterName: Room X
-    m_GUID: 79190f1e429424246b6ff46577611745
-  - m_ParameterName: Room Y
-    m_GUID: 5cbf6ddbb7026dc45abe06cc43322e1c
-  - m_ParameterName: Room Z
-    m_GUID: 9760f1cc98e9dd54d9700864efe2f90a
-  - m_ParameterName: Left
-    m_GUID: c8aaa722d4ec4154bba4febdb24cb6a9
-  - m_ParameterName: Right
-    m_GUID: a7822f794e8835b44b5d97b299e90829
-  - m_ParameterName: Up
-    m_GUID: aff67efc612d61b469184c39ea2c6339
-  - m_ParameterName: Down
-    m_GUID: eedb6e2560b96954f80a6216a070957a
-  - m_ParameterName: Behind
-    m_GUID: f00e9382c178ba74091552a02191a248
-  - m_ParameterName: Front
-    m_GUID: aca764e9e8594ad4e82b73de0b803e6c
-  - m_ParameterName: GScale
-    m_GUID: 0a3224836f36e1a40a4ede80f5080595
-  - m_ParameterName: Shared Rev Max
-    m_GUID: d3e2b68513d653740a78c0c9c694e7c7
-  - m_ParameterName: Shared Rev Min
-    m_GUID: f55c0bb461c06f4419674ef5c9fa9953
-  m_SendTarget: {fileID: 0}
-  m_EnableWetMix: 0
-  m_Bypass: 0
 --- !u!245 &24500003
 AudioMixerSnapshotController:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Snapshot Init
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: a069d6b9a45325b43b6121c1de0b82fa
@@ -231,8 +194,9 @@ AudioMixerSnapshotController:
 --- !u!245 &245000012928175524
 AudioMixerSnapshotController:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Snapshot Interior
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 06ac7339e485edb4182863286808e1fd

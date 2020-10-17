@@ -7,48 +7,123 @@ public class FiredEventArgs : EventArgs
     public Ray[] Raycasts;
 }
 
-[Serializable]
-public class Gun : IGun
+public static class PropertyHelpers
 {
-    [Serializable]
-    public class GunState
+    //Returns true if the value was updated, false if the value did not change
+    public static bool UpdateValue<T>(ref T field, T value) where T : IEquatable<T>
     {
-        [SerializeField] private int _currentBullets;
-        [SerializeField] private float _lastAction;
-        [SerializeField] private bool firstReload;
+        var didChange = !field.Equals(value);
+        field = value;
+        return didChange;
+    }
+}
+[Serializable]
+public class AmmoState
+{
+    [SerializeField] private int _currentAmmo;
+    [SerializeField] private int _maxAmmo;
+    /// <summary>
+    /// A Helper to get the Gun this data is attached to.
+    /// A null value indicates that the reference has not been set or the data is not representing the state of a gun
+    /// </summary>
+    public IGun AttachedGun { get; }
+    public event EventHandler<CurrentAmmoChangedArgs> CurrentAmmoChanged;
+    public event EventHandler<MaxAmmoChangedArgs> MaxAmmoChanged;
 
-        public int CurrentBullets
+    public int MaxAmmo
+    {
+        get => _maxAmmo;
+        set
         {
-            get => _currentBullets;
-            set => _currentBullets = value;
-        }
-
-        public bool FirstReload
-        {
-            get => firstReload;
-            set => firstReload = value;
-        }
-
-        public float LastAction
-        {
-            get => _lastAction;
-            set => _lastAction = value;
+            if(PropertyHelpers.UpdateValue(ref _maxAmmo, value))
+                OnMaxAmmoChanged(new MaxAmmoChangedArgs() {MaxAmmo = _maxAmmo});
         }
     }
 
+
+    public int CurrentAmmo
+    {
+        get => _currentAmmo;
+        set
+        {
+            if(PropertyHelpers.UpdateValue(ref _currentAmmo, value))
+                OnCurrentAmmoChanged(new CurrentAmmoChangedArgs() {CurrentAmmo = _currentAmmo});
+            
+        }
+    }
+    
+    public bool IsAmmoFull => MaxAmmo <= CurrentAmmo;
+    public bool IsAmmoEmpty => 0 >= CurrentAmmo;
+    public bool HasAmmo => !IsAmmoEmpty;
+
+    /// <summary>
+    /// Ammo changed args use the attached gun if applicable
+    /// </summary>
+    private object Sender => AttachedGun != null ? (object)AttachedGun : this;
+    protected virtual void OnMaxAmmoChanged(MaxAmmoChangedArgs args)
+    {
+        MaxAmmoChanged?.Invoke(Sender, args);
+    }
+    protected virtual void OnCurrentAmmoChanged(CurrentAmmoChangedArgs args)
+    {
+        CurrentAmmoChanged?.Invoke(Sender, args);
+    }
+
+    /// <summary>
+    /// This is function copies over the values, and does not copy the data source's events.
+    /// Events are fired normally when updating.
+    /// </summary>
+    /// <param name="state">The data source with new values to use.</param>
+    /// <remarks>This does not copy events to avoid listeners losing track of their sources. This also means we loosely enforce AmmoData from being destroyed and replaced, which would be more suitable for a structure anyways.</remarks>
+    public void CopyFrom(AmmoState state)
+    {
+        MaxAmmo = state.MaxAmmo;
+        CurrentAmmo = state.CurrentAmmo;
+    }
+}
+
+public class ReloadData
+{
+    [SerializeField] private bool _fullReload;
+    [SerializeField] private float _initialReload;
+    [SerializeField] private float _additionalReload;
+}
+
+[Serializable]
+public class Gun : IGun
+{
+    public Gun()
+    {
+        ammoState = new AmmoState();
+    }
+    
+    [SerializeField] private AmmoState ammoState;
     [SerializeField] private AimCone _aimCone;
     [SerializeField] private MagazineInfo _magazine;
     [SerializeField] private FiringInfo _firingInfo;
-    [SerializeField] private GunState _state;
+    [SerializeField] private float _lastAction;
+    [SerializeField] private bool firstReload;
+    public bool FirstReload
+    {
+        get => firstReload;
+        private set => firstReload = value;
+    }
+
+    public float LastAction
+    {
+        get => _lastAction;
+        private set => _lastAction = value;
+    }
+
     [SerializeField] private bool _useRandomSpread = false;
 
-    public bool CanFire => (_firingInfo.FireCooldown + _state.LastAction - Time.time <= 0f);
+    public AmmoState AmmoState => ammoState;
 
-    public bool CanReload => ((_state.FirstReload ? _magazine.InitialReload : _magazine.AdditionalReload) +
-        _state.LastAction - Time.time <= 0f);
+    public bool CanFire => (_firingInfo.FireCooldown + LastAction - Time.time <= 0f);
 
-    public bool HasBullets => _state.CurrentBullets > 0;
-    public bool MagazineFull => (_state.CurrentBullets == _magazine.MagazineSize);
+    public bool CanReload => ((FirstReload ? _magazine.InitialReload : _magazine.AdditionalReload) +
+        LastAction - Time.time <= 0f);
+    
     public Vector2 RandomSpread => Random.insideUnitCircle;
 
     public Vector2 GetUniformSpread(int i, int n, int rings = 2)
@@ -82,38 +157,40 @@ public class Gun : IGun
 
     public void Reload()
     {
-        if (CanReload && !MagazineFull)
+        if (CanReload && !ammoState.IsAmmoFull)
         {
             if (_magazine.FullReload)
             {
-                _state.CurrentBullets = _magazine.MagazineSize;
-                _state.LastAction = Time.time;
                 OnReloading(new EventArgs());
+                ammoState.CurrentAmmo = ammoState.MaxAmmo;
+                LastAction = Time.time;
             }
             else
             {
-                _state.CurrentBullets++;
-                _state.LastAction = Time.time;
-                if(_state.FirstReload)
+                ammoState.CurrentAmmo++;
+                LastAction = Time.time;
+                if (FirstReload)
                     OnReloadingStarted(new EventArgs());
-                else if (MagazineFull)
+                else if (ammoState.IsAmmoFull)
                     OnReloadingEnded(new EventArgs());
                 else
                     OnReloading(new EventArgs());
-                _state.FirstReload = false;
+
+                FirstReload = false;
             }
         }
     }
 
+    
     public void Fire(Vector3 spawnPosition, Quaternion orientation)
     {
         const float MaxBulletTravel = 1024f;
         if (CanFire)
         {
-            if (!HasBullets)
+            if (!ammoState.HasAmmo)
             {
                 OnFiredEmpty(new EventArgs());
-                _state.LastAction = Time.time;
+                LastAction = Time.time;
             }
             else
             {
@@ -123,15 +200,27 @@ public class Gun : IGun
                     var spread = _useRandomSpread ? RandomSpread : GetUniformSpread(p, _firingInfo.Pellets);
                     var forward = _aimCone.CalculateSpreadedForward(spread, orientation);
                     _debugs[p] = new Ray(spawnPosition, forward);
-                    if (Physics.Raycast(spawnPosition, forward, MaxBulletTravel))
+                    if (Physics.Raycast(spawnPosition, forward, out var hitInfo, MaxBulletTravel))
                     {
-                        Debug.Log($"Pellet {p} Hit!");
+                        if (hitInfo.rigidbody != null)
+                        {
+                            var shootable = hitInfo.rigidbody.GetComponent<Shootable>();
+                            if (shootable != null)
+                            {
+                                shootable.TakeShot(hitInfo.point, forward, hitInfo.normal);
+                            }
+                            else
+                                Debug.Log($"Pellet {p} Hit!");
+                        }
+                        else
+                            Debug.Log($"Pellet {p} Hit!");
                     }
                 }
-                OnFired(new FiredEventArgs(){Raycasts = _debugs});
-                _state.CurrentBullets--;
-                _state.LastAction = Time.time;
-                _state.FirstReload = true;
+
+                OnFired(new FiredEventArgs() {Raycasts = _debugs});
+                ammoState.CurrentAmmo--;
+                LastAction = Time.time;
+                FirstReload = true;
             }
         }
     }
@@ -143,13 +232,13 @@ public class Gun : IGun
     public event EventHandler<FiredEventArgs> Fired;
     public event EventHandler FiredEmpty;
 
-    
-    
+
     public void Initialize()
     {
-        _state.LastAction = Mathf.NegativeInfinity;
-        _state.FirstReload = true;
-        _state.CurrentBullets = _magazine.MagazineSize;
+        LastAction = Mathf.NegativeInfinity;
+        FirstReload = true;
+        ammoState.CurrentAmmo = ammoState.MaxAmmo;
+        // _rayCache = new Ray[_firingInfo.Pellets];
     }
 
     public void Initialize(GunData data)
@@ -157,12 +246,13 @@ public class Gun : IGun
         _aimCone = data.AimCone;
         _firingInfo = data.FiringInfo;
         _magazine = data.MagazineInfo;
+        ammoState.CopyFrom(data.AmmoState);
         Initialize();
     }
 
     private Ray[] _debugs;
     public Ray[] DebugRays => _debugs;
-
+    
     public void OnDrawGizmos()
     {
         const float DrawRange = 10f;
@@ -189,26 +279,26 @@ public class Gun : IGun
 
     protected virtual void OnReloading(EventArgs args)
     {
-        Reloading?.Invoke(this,args);
+        Reloading?.Invoke(this, args);
     }
 
     protected virtual void OnFired(FiredEventArgs args)
     {
-        Fired?.Invoke(this,args);
+        Fired?.Invoke(this, args);
     }
 
     protected virtual void OnReloadingStarted(EventArgs args)
     {
-        ReloadingStarted?.Invoke(this,args);
+        ReloadingStarted?.Invoke(this, args);
     }
 
     protected virtual void OnReloadingEnded(EventArgs args)
     {
-        ReloadingEnded?.Invoke(this,args);
+        ReloadingEnded?.Invoke(this, args);
     }
 
     protected virtual void OnFiredEmpty(EventArgs args)
     {
-        FiredEmpty?.Invoke(this,args);
+        FiredEmpty?.Invoke(this, args);
     }
 }
