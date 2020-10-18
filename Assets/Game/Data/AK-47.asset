@@ -12,16 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f51d856e4f4d54a6c3f97018edcb01, type: 3}
   m_Name: AK-47
   m_EditorClassIdentifier: 
-  _ammoData:
-    _currentAmmo: 0
-    _maxAmmo: 30
+  ammoData:
+    MaxAmmo: 30
+  reloadingData:
+    ReloadFullMagazine: 1
+    InitialReload: 1
+    AdditionalReload: 0
   _aimCone:
     _cone: {x: 1, y: 1, z: 300}
-  _magazine:
-    _magazineSize: 30
-    fullReload: 1
-    _initialReload: 1.1
-    _additionalReload: 0
   _firingInfo:
     _fireCooldown: 0.1
     _pellets: 1

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GunBehaviour : MonoBehaviour, IGun
 {
-    #pragma warning disable 649
+#pragma warning disable 649
     [SerializeField] private Gun _gun;
     [SerializeField] private GunData _gunData;
     [SerializeField] private bool _allowTargetingAssist;
@@ -15,9 +15,8 @@ public class GunBehaviour : MonoBehaviour, IGun
 
     [SerializeField] private Transform _transform;
 
-    [SerializeField] private bool _reloading;
-    #pragma warning restore 649
-    
+#pragma warning restore 649
+
     private void Awake()
     {
         _gun = new Gun();
@@ -33,23 +32,21 @@ public class GunBehaviour : MonoBehaviour, IGun
     {
         if (Input.GetKey(_stopButton))
         {
-            _reloading = false;
+            _gun.ReloadingState.StopReloading();
         }
+
         if (Input.GetKey(_reloadCode))
         {
-            _reloading = true;
+            _gun.ReloadingState.StartReloading();
         }
         else if (Input.GetKey(_fireButton))
         {
             Fire(_transform.position, _transform.rotation);
-            _reloading = false;
+            _gun.ReloadingState.StopReloading();
         }
-        else
-
-        if (_reloading)
+        else if (_gun.ReloadingState.IsReloading)
         {
             Reload();
-            _reloading = !CanReload;
         }
     }
 
@@ -60,9 +57,9 @@ public class GunBehaviour : MonoBehaviour, IGun
 
     public AmmoState AmmoState => _gun.AmmoState;
 
-    public bool CanFire => _gun.CanFire;
+    public ReloadingState ReloadingState => _gun.ReloadingState;
 
-    public bool CanReload => _gun.CanReload;
+    public bool CanFire => _gun.CanFire;
 
 
     public void Reload()
@@ -75,33 +72,15 @@ public class GunBehaviour : MonoBehaviour, IGun
         _gun.Fire(spawnPosition, orientation);
     }
 
-    public event EventHandler Reloading
-    {
-        add => _gun.Reloading += value;
-        remove => _gun.Reloading -= value;
-    }
-    public event EventHandler ReloadingStarted
-    {
-        add => _gun.ReloadingStarted += value;
-        remove => _gun.ReloadingStarted -= value;
-    }
-
-    
-    public event EventHandler ReloadingEnded
-    {
-        add => _gun.ReloadingEnded += value;
-        remove => _gun.ReloadingEnded -= value;
-    }
-
     public event EventHandler<FiredEventArgs> Fired
     {
         add => _gun.Fired += value;
         remove => _gun.Fired -= value;
     }
+
     public event EventHandler FiredEmpty
     {
         add => _gun.FiredEmpty += value;
         remove => _gun.FiredEmpty -= value;
     }
-
 }

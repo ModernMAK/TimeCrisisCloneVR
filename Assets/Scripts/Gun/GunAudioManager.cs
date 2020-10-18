@@ -8,15 +8,15 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(IGun))]
 public class GunAudioManager : MonoBehaviour
 {
-    #pragma warning disable 649
+#pragma warning disable 649
     [SerializeField] private AudioClip[] _firingClipPool;
     [SerializeField] private AudioClip[] _firingEmptyClipPool;
     [SerializeField] private AudioClip[] _reloadingClipPool;
     [SerializeField] private AudioClip[] _reloadingStartClipPool;
     [SerializeField] private AudioClip[] _reloadingEndClipPool;
 
-    [SerializeField] private AudioSource _source;   
-    #pragma warning restore 649
+    [SerializeField] private AudioSource _source;
+#pragma warning restore 649
     private void Awake()
     {
         if (_source == null)
@@ -32,10 +32,11 @@ public class GunAudioManager : MonoBehaviour
     {
         var gun = GetComponent<IGun>();
         gun.Fired += PlayFireClip;
-        gun.Reloading += PlayReloadClip;
         gun.FiredEmpty += PlayFireEmptyClip;
-        gun.ReloadingStarted += PlayReloadStartClip;
-        gun.ReloadingEnded += PlayReloadEndClip;
+
+        gun.ReloadingState.Reloading += PlayReloadClip;
+        gun.ReloadingState.ReloadingStarted += PlayReloadStartClip;
+        gun.ReloadingState.ReloadingEnded += PlayReloadEndClip;
     }
 
 

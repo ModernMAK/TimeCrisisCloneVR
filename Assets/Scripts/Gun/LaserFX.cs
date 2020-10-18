@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class LaserFX : MonoBehaviour
 {
-    #pragma warning disable 649
+#pragma warning disable 649
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private float _lineLength = 128f;
     [SerializeField] private LayerMask _targetLayers;
-    #pragma warning restore 649
+#pragma warning restore 649
     private void Start()
     {
         _lineRenderer.positionCount = 2;
@@ -25,13 +25,12 @@ public class LaserFX : MonoBehaviour
         if (Physics.Raycast(r, out var hitInfo, _lineLength, _targetLayers))
         {
             var dist = (hitInfo.point - tran.position).magnitude;
-            _lineRenderer.SetPosition(1, Vector3.forward * dist); 
+            _lineRenderer.SetPosition(1, Vector3.forward * dist);
             _lineRenderer.gameObject.SetActive(true);
         }
         else
         {
-            _lineRenderer.SetPosition(1, Vector3.forward * _lineLength); 
+            _lineRenderer.SetPosition(1, Vector3.forward * _lineLength);
         }
-
     }
 }

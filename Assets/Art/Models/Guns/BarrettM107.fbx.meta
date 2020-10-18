@@ -29,12 +29,22 @@ ModelImporter:
   - first:
       74: -3704289112126983070
     second: Shoot
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BarrettM107_material
+    second: {fileID: 2100000, guid: 9f335a0520ac2b341908b4c4e3ffc49b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Rocket_Shell1_Shell
+    second: {fileID: 2100000, guid: 18fb3b42959690e468071fc9e2bae816, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

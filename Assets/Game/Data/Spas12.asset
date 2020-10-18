@@ -12,16 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f51d856e4f4d54a6c3f97018edcb01, type: 3}
   m_Name: Spas12
   m_EditorClassIdentifier: 
-  _ammoData:
-    _currentAmmo: 8
-    _maxAmmo: 8
+  ammoData:
+    MaxAmmo: 12
+  reloadingData:
+    ReloadFullMagazine: 0
+    InitialReload: 0.4
+    AdditionalReload: 0.3
   _aimCone:
     _cone: {x: 1, y: 1, z: 32}
-  _magazine:
-    _magazineSize: 12
-    fullReload: 0
-    _initialReload: 0.5
-    _additionalReload: 0.4
   _firingInfo:
     _fireCooldown: 0.3
     _pellets: 15

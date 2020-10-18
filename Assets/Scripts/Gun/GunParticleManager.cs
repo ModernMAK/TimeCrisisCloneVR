@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class GunParticleManager : MonoBehaviour
 {
-    #pragma warning disable 649
+#pragma warning disable 649
     [SerializeField] private ParticleSystem _bulletEjectAnim;
     [SerializeField] private ParticleSystem _pelletAnim;
-    #pragma warning restore 649
-    
+#pragma warning restore 649
+
     void Start()
-        {
-            var gun = GetComponent<IGun>();
+    {
+        var gun = GetComponent<IGun>();
         gun.Fired += PlayBulletEject;
         gun.Fired += PlayPelletProjectile;
     }
@@ -25,8 +25,7 @@ public class GunParticleManager : MonoBehaviour
         for (var i = 0; i < args.Raycasts.Length; i++)
         {
             sharedArgs.velocity = args.Raycasts[i].direction * Speed;
-            _pelletAnim.Emit(sharedArgs, 1);                
+            _pelletAnim.Emit(sharedArgs, 1);
         }
-
     }
 }
