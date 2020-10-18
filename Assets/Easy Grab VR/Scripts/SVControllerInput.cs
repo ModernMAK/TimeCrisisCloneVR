@@ -47,12 +47,18 @@ public class SVControllerInput : MonoBehaviour {
 
     public virtual bool GripAutoHolds => gripAutoHolds;
 
+    [Space(15)]
+    [Header("Debug")]
+    [Tooltip("Surpresses manually logged errors.")] [SerializeField] private bool _surpressErrors = false;
+    public virtual bool SurpressForcedErrors => _surpressErrors;
 	//------------------------
 	// Variables
 	//------------------------
 	[HideInInspector]
 	public SVControllerType activeController;
 
+	
+	
 	#if USES_STEAM_VR
 	[HideInInspector]
 	public SteamVR_Controller.Device activeControllerDevice;
@@ -88,8 +94,14 @@ public class SVControllerInput : MonoBehaviour {
 		}
 		clipHard = new OVRHapticsClip(clipHard.Samples, clipHard.Samples.Length);
 		#else
-		Debug.LogError("Easy Grab VR requires you to choose either Steam VR or Oculus SDK as your VR platform. Please open \"Window -> Easy Grip VR SDK\" and select your framework.");
-		#endif
+		var msg = "Easy Grab VR requires you to choose either Steam VR or Oculus SDK as your VR platform. Please open \"Window -> Easy Grip VR SDK\" and select your framework.";
+		msg += $"\n\t{this.gameObject.name} ~ {this.name}";
+
+		if (!SurpressForcedErrors)
+			Debug.LogError(msg);
+		else
+			Debug.LogWarning(msg);
+#endif
 	}
 
 	//------------------------

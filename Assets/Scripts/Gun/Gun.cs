@@ -1,7 +1,164 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
+public enum GunActionState
+{
+    Idle,
+    Firing,
+    Reloading,
+}
+
+public class FiniteStateMachine<TState>
+{
+    public class StateInfo
+    {
+        public StateInfo()
+        {
+            Enter = new Dictionary<TState, Action>();
+            Exit = new Dictionary<TState, Action>();
+            TransitionPredicates = new Dictionary<TState, Func<bool>>();
+        }
+
+        public Action Update { get; private set; }
+        public Dictionary<TState, Action> Enter { get; private set; }
+        public Dictionary<TState, Action> Exit { get; private set; }
+        public Dictionary<TState, Func<bool>> TransitionPredicates { get; private set; }
+
+        public void PerformUpdate()
+        {
+            if (Update != null)
+                Update();
+        }
+
+        public void PerformEnter(TState oldState)
+        {
+            if (Enter.TryGetValue(oldState, out var action)) action();
+        }
+
+        public void PerformExit(TState newState)
+        {
+            if (Exit.TryGetValue(newState, out var action)) action();
+        }
+
+        public bool CheckTransition(out TState newState)
+        {
+            foreach (var kvp in TransitionPredicates)
+            {
+                var state = kvp.Key;
+                var pred = kvp.Value;
+                if (pred())
+                {
+                    newState = state;
+                    return true;
+                }
+            }
+
+            newState = default;
+            return false;
+        }
+
+        public StateInfo SetUpdate(Action action)
+        {
+            Update = action;
+            return this;
+        }
+
+        public StateInfo SetEnter(TState enter, Action action)
+        {
+            Enter[enter] = action;
+            return this;
+        }
+
+        public StateInfo SetExit(TState exit, Action action)
+        {
+            Exit[exit] = action;
+            return this;
+        }
+
+        public StateInfo SetTransition(TState transition, Func<bool> predicate)
+        {
+            TransitionPredicates[transition] = predicate;
+            return this;
+        }
+    }
+
+    private Dictionary<TState, StateInfo> _stateTable;
+    private TState _currentState;
+    public StateInfo CurrentStateInfo => _stateTable[_currentState];
+
+    public FiniteStateMachine()
+    {
+        _stateTable = new Dictionary<TState, StateInfo>();
+        _currentState = default;
+    }
+
+    public StateInfo RegisterState(TState state)
+    {
+        if (_stateTable.TryGetValue(state, out var info) && info != null)
+            return _stateTable[state] = new StateInfo();
+        else
+            throw new InvalidOperationException("State already registered.");
+    }
+
+    //Allow forced state changes
+    public void ChangeState(TState newState)
+    {
+        if (newState.Equals(_currentState))
+            return;
+        CurrentStateInfo.PerformExit(newState);
+        var oldState = _currentState;
+        _currentState = newState;
+        CurrentStateInfo.PerformExit(oldState);
+    }
+
+    public void UpdateStateAndTransition()
+    {
+        UpdateState();
+        UpdateTransition();
+    }
+
+    public void UpdateState() => CurrentStateInfo.Update();
+
+    public void UpdateTransition()
+    {
+        if (CurrentStateInfo.CheckTransition(out var newState))
+            ChangeState(newState);
+    }
+}
+
+public class GunFiniteStateMachine : GunState
+{
+    private FiniteStateMachine<GunActionState> _internalStateMachine;
+
+    void Initialize()
+    {
+        _internalStateMachine.RegisterState(GunActionState.Idle)
+            .SetEnter(GunActionState.Reloading, Reloading_Enter_Idle)
+            .SetEnter(GunActionState.Firing, Reloading_Enter_Idle)
+            .SetUpdate(Update_Idle);
+
+        // _internalStateMachine.RegisterState(GunActionState.Firing)
+        //     .SetEnter()
+    }
+
+    void Update_Idle()
+    {
+    }
+
+    void Reloading_Enter_Idle()
+    {
+        AttachedGun.ReloadingState.StopReloading();
+    }
+
+    public GunFiniteStateMachine(IGun gun) : base(gun)
+    {
+        _internalStateMachine = new FiniteStateMachine<GunActionState>();
+        Initialize();
+    }
+}
 
 [Serializable]
 public class Gun : IGun
@@ -50,7 +207,7 @@ public class Gun : IGun
         const float MaxBulletTravel = 1024f;
         if (CanFire)
         {
-            if (!_ammoState.HasAmmo)
+            if (!_ammoState.HasAmmo && !GlobalSettings.CheatCodes.InfiniteAmmo)
             {
                 OnFiredEmpty(new EventArgs());
                 LastAction = Time.time;
@@ -84,8 +241,11 @@ public class Gun : IGun
                 }
 
                 OnFired(new FiredEventArgs() {Raycasts = _debugs});
-                _ammoState.CurrentAmmo--;
-                _reloadingState.StopReloading();
+                if (!GlobalSettings.CheatCodes.InfiniteAmmo)
+                {
+                    _ammoState.CurrentAmmo--;
+                    _reloadingState.StopReloading();
+                }
                 LastAction = Time.time;
             }
         }
@@ -98,7 +258,7 @@ public class Gun : IGun
     public void Initialize()
     {
         LastAction = Mathf.NegativeInfinity;
-        _ammoState.CurrentAmmo = _ammoState.MaxAmmo;    
+        _ammoState.CurrentAmmo = _ammoState.MaxAmmo;
     }
 
     public void Initialize(GunData data)

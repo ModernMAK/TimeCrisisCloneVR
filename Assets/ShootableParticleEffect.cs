@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Shootable))]
 public class ShootableParticleEffect : MonoBehaviour
@@ -21,7 +22,9 @@ public class ShootableParticleEffect : MonoBehaviour
     #pragma warning restore 649
     
     [Range(0f,1f)]
-    [SerializeField] private float _surfaceDampening = 0.5f;    
+    [SerializeField] private float _surfaceDampening = 0.5f;   
+    [Range(0f,1f)]
+    [SerializeField] private float _randomIntensity = 0.5f;    
     private void Start()
     {
         _pool = new Queue<PooledPrefab>();
@@ -52,7 +55,8 @@ public class ShootableParticleEffect : MonoBehaviour
         go.transform.position = e.HitPosition;
         var spreadDir = Vector3.ProjectOnPlane(e.ImpactDirection, e.ImpactNormal);
         var reflectDir = e.ImpactDirection - spreadDir;
-        go.transform.rotation = Quaternion.LookRotation(spreadDir  -reflectDir * _surfaceDampening);
+        var randomDir =  Random.insideUnitSphere;
+        go.transform.rotation = Quaternion.LookRotation((spreadDir  - reflectDir * _surfaceDampening) * (1 - _randomIntensity) + randomDir * _randomIntensity);
         go.SetActive(true);
         
         

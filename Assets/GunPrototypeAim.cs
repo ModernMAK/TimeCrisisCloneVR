@@ -67,14 +67,11 @@ public class GunPrototypeAim : MonoBehaviour
         var ray = _camera.ScreenPointToRay(Input.mousePosition);
         Vector3 rayDelta;
         var origin = transform.position;
+        rayDelta = ray.origin + ray.direction * MaxScanRange - origin;
         if (Physics.Raycast(ray, out var hitinfo, MaxScanRange))
-        {
-            rayDelta = hitinfo.point - origin;
-        }
-        else
-        {
-            rayDelta = ray.origin + ray.direction * MaxScanRange - origin;
-        }
+            if(hitinfo.rigidbody != null)
+                if(hitinfo.rigidbody.GetComponent<IGun>() == null)
+                    rayDelta = hitinfo.point - origin;
 
         transform.rotation = Quaternion.LookRotation(rayDelta);
 

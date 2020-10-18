@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public class CustomSVGrabbable : SVGrabbable
+{
+    
+}
+
 [RequireComponent(typeof(SVControllerInput))]
 [RequireComponent(typeof(Rigidbody))]
 public class SVGrabbable : MonoBehaviour {
@@ -26,18 +31,32 @@ public class SVGrabbable : MonoBehaviour {
     [Tooltip("How long it takes the object to complete its flight.")]
     public float grabFlyTime = .1f;
 
-    [Space(15)]
-    [Header("Hold Settings")]
+    [Space(15)] [Header("Hold Settings")] 
+    
+    [Tooltip("Defines a gripping offset or orientation via an anchor from the root of the transform.")]
+    public Transform offsetTransform;
+
+    private Vector3 offsetInHandFromTransform => transform.position - offsetTransform.position;
+    public bool useTransformAsOffset;
+    public bool useTransformAsRotation;
+    private bool UseTransformAsOffset => useTransformAsOffset && offsetTransform != null;
+    private bool UseTransformAsRotation => useTransformAsRotation && offsetTransform != null;
 
     [Tooltip("This allows you to mirror the offset on the Local X Axis if the object is held in your left hand. You usually want this on.")]
     public bool mirrorXOffsetInLeftHand = true;
     [Tooltip("Where on the object should you grip it? Offsets are useful for tools like hammers and other things.")]
     public Vector3 positionOffsetInHand = new Vector3(0, 0, 0);
-
+    public Vector3 PositionOffsetInHand => UseTransformAsOffset ? offsetInHandFromTransform : positionOffsetInHand;
+    
     [Tooltip("If true this forces the object to a specific local rotation when you pick it up.")]
     public bool forceRotationInHand = false;
+    
     [Tooltip("The rotation forced in hand. Only applies if forceRotationInHand is true.")]
     public Vector3 rotationInHand = new Vector3(0, 0, 0);
+
+    public Quaternion rotationInHandFromTransform => Quaternion.Inverse(transform.rotation) * offsetTransform.rotation;
+
+    public Quaternion RotationInHand => UseTransformAsRotation ? rotationInHandFromTransform : Quaternion.Euler(rotationInHand);
 
     [Tooltip("If true a held object won't collide with anything and doesn't use inHandLerpSpeed, rather it sets its position directly.")]
     public bool ignorePhysicsInHand = true;
@@ -272,7 +291,7 @@ public class SVGrabbable : MonoBehaviour {
         Quaternion targetRotation;
         Quaternion controllerRotation = this.input.RotationForController(this.input.activeController);
         if (this.forceRotationInHand) {
-            targetRotation = controllerRotation * Quaternion.Euler(this.rotationInHand);
+            targetRotation = controllerRotation * this.RotationInHand;
         } else {
             targetRotation = controllerRotation * this.grabData.grabStartLocalRotation;
         }
@@ -282,7 +301,7 @@ public class SVGrabbable : MonoBehaviour {
         Vector3 targetOffset;
         if (this.input.activeController == SVControllerType.SVController_Left && mirrorXOffsetInLeftHand) {
             Matrix4x4 mirrorMatrix = Matrix4x4.Scale(new Vector3(-1, 1, 1));
-            Matrix4x4 offsetAndRotation = Matrix4x4.TRS(-positionOffsetInHand, Quaternion.Euler(this.rotationInHand), Vector3.one);
+            Matrix4x4 offsetAndRotation = Matrix4x4.TRS(-PositionOffsetInHand, this.RotationInHand, Vector3.one);
             Matrix4x4 finalOffsetAndRotation = mirrorMatrix * offsetAndRotation;
 
             targetRotation = controllerRotation * Quaternion.LookRotation(finalOffsetAndRotation.GetColumn(2), finalOffsetAndRotation.GetColumn(1));
