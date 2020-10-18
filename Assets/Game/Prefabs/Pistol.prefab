@@ -394,21 +394,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gun:
-    _ammoData:
+    _ammoState:
       _currentAmmo: 0
       _maxAmmo: 0
-    _aimCone:
-      _cone: {x: 0, y: 0, z: 0}
-    _magazine:
-      _magazineSize: 0
-      fullReload: 0
+    _reloadingState:
+      _isReloading: 0
+      _firstReload: 0
+      _reloadFullMagazine: 0
       _initialReload: 0
       _additionalReload: 0
+    _aimCone:
+      _cone: {x: 0, y: 0, z: 0}
     _firingInfo:
       _fireCooldown: 0
       _pellets: 0
     _lastAction: 0
-    firstReload: 0
     _useRandomSpread: 0
   _gunData: {fileID: 11400000, guid: bdae6d2826f51b14181bb8c17b80f004, type: 2}
   _allowTargetingAssist: 0
@@ -416,7 +416,6 @@ MonoBehaviour:
   _fireButton: 323
   _stopButton: 115
   _transform: {fileID: 786410812189168412}
-  _reloading: 0
 --- !u!114 &4721544855975691271
 MonoBehaviour:
   m_ObjectHideFlags: 0
