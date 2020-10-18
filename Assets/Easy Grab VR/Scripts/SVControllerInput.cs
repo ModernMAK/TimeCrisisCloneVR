@@ -35,11 +35,17 @@ public class SVControllerInput : MonoBehaviour {
     [Tooltip("The button that should grab the object.")]
     public SVInputButton gripButton = SVInputButton.SVButton_Trigger;
 
+    public virtual SVInputButton GripButton => gripButton;
+
     [Tooltip("If you are auto holding this button will drop the object.")]
     public SVInputButton releaseGripButton = SVInputButton.SVButton_None;
 
+    public virtual SVInputButton ReleaseGripButton => releaseGripButton;
+    
     [Tooltip("If true the object stays in your hand until the releaseGripButton is pressed. If false you drop the object when you release the grip button.")]
     public bool gripAutoHolds = false;
+
+    public virtual bool GripAutoHolds => gripAutoHolds;
 
 	//------------------------
 	// Variables
