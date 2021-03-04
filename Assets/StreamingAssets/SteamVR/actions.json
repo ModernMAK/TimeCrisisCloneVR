@@ -81,6 +81,18 @@
       "name": "/actions/mixedreality/in/ExternalCamera",
       "type": "pose",
       "requirement": "optional"
+    },
+    {
+      "name": "/actions/shooter/in/Trigger",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/shooter/in/Reload",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/shooter/in/Cancel",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -99,6 +111,10 @@
     {
       "name": "/actions/mixedreality",
       "usage": "single"
+    },
+    {
+      "name": "/actions/shooter",
+      "usage": "leftright"
     }
   ],
   "default_bindings": [
