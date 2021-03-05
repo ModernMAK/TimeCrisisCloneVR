@@ -4,8 +4,8 @@ using UnityEngine;
 [Serializable]
 public class ReloadingState : GunState
 {
-    [SerializeField] private bool _isReloading;
-    [SerializeField] private bool _firstReload;
+    private bool _isReloading;    
+    private bool _firstReload;
     [SerializeField] private bool _reloadFullMagazine;
     [SerializeField] private float _initialReload;
     [SerializeField] private float _additionalReload;
@@ -60,15 +60,18 @@ public class ReloadingState : GunState
 
     public void StartReloading()
     {
-        if (!_isReloading)
-        {
-            _firstReload = true;
-        }
-
+        //if (!_isReloading)
+        //{
+        //    _firstReload = true;
+        //}
         _isReloading = true;
     }
 
-    public void StopReloading() => _isReloading = false;
+    public void StopReloading()
+    {
+        _isReloading = false;
+        _firstReload = true;
+    }
     public event EventHandler Reloading;
     public event EventHandler ReloadingStarted;
     public event EventHandler ReloadingEnded;

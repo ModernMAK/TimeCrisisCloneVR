@@ -40,10 +40,12 @@ public class GunVRInput : MonoBehaviour
         {
             _gunBehaviour.Reload();
         }
-        if (_fireAction.GetState(Source))
+        if (_fireAction.GetStateDown(Source))
         {
-            _gunBehaviour.Fire();
+            _gunBehaviour.PressFire();
         }
+        if (_fireAction.GetStateUp(Source))
+            _gunBehaviour.ReleaseFire();
 
     }
 }

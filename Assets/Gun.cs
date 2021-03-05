@@ -26,6 +26,7 @@ public class Gun : MonoBehaviour, IGun
 	private AimCone _aimCone;
 	private FiringInfo _firingInfo;
 	private float _lastAction;
+	private bool _isFiring;
 
 	private void Awake()
 	{
@@ -52,12 +53,15 @@ public class Gun : MonoBehaviour, IGun
 
 	void Update()
 	{
-		if(_reloadingState.IsReloading)
+		if (_reloadingState.IsReloading)
 			_reloadingState.PerformReload(ref _lastAction, Magazine);
+		else if (_isFiring)
+			Fire();
 	}
 	public void Stop()
 	{
 		_reloadingState.StopReloading();
+		_isFiring = false;
 	}
 
 	public void Reload()
@@ -67,8 +71,8 @@ public class Gun : MonoBehaviour, IGun
 	}
 
 
-	public void Fire()
-	{
+	public void Fire() 
+	{ 
 		if (CanFire)
 		{
 			if (!_magazine.HasAmmo && !GlobalSettings.CheatCodes.InfiniteAmmo)
@@ -90,7 +94,8 @@ public class Gun : MonoBehaviour, IGun
 								shootable.TakeShot(hitInfo.point, ray.direction, hitInfo.normal);
 							}
 						}
-
+				if (!_firingInfo.AllowAutoFire)
+					_isFiring = false;
 				OnFired(new FiredEventArgs() { Raycasts = _debugs });
 				if (!GlobalSettings.CheatCodes.InfiniteAmmo)
 				{
@@ -102,7 +107,15 @@ public class Gun : MonoBehaviour, IGun
 			}
 		}
 	}
-
+	public void PressFire()
+	{
+		_isFiring = true;
+		Fire();
+	}
+	public void ReleaseFire()
+	{
+		_isFiring = false;
+	}
 
 	public event EventHandler<FiredEventArgs> Fired;
 	public event EventHandler FiredEmpty;

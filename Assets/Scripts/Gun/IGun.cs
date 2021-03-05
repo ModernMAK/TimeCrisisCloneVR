@@ -10,7 +10,8 @@ public interface IGun
 
     void Reload();
     //void Fire(Vector3 spawnPosition, Quaternion orientation);
-    void Fire();
+    void PressFire();
+    void ReleaseFire();
 
     event EventHandler<FiredEventArgs> Fired;
     event EventHandler FiredEmpty;

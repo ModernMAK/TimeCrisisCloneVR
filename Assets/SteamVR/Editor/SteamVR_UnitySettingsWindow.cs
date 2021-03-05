@@ -38,7 +38,11 @@ namespace Valve.VR
 #endif
 
         const BuildTarget recommended_BuildTarget = BuildTarget.StandaloneWindows64;
+#if UNITY_PRO_LICENSE
         const bool recommended_ShowUnitySplashScreen = false;
+#else
+        const bool recommended_ShowUnitySplashScreen = true;
+#endif
         const bool recommended_DefaultIsFullScreen = false;
         const int recommended_DefaultScreenWidth = 1024;
         const int recommended_DefaultScreenHeight = 768;

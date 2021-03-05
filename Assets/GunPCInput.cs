@@ -17,8 +17,9 @@ public class GunPCInput : MonoBehaviour
         if(_controls == null)
             _controls = new TimeCrisisCloneVR();
         _controls.Gun.Enable();
+        _prevFire = false;
     }
-
+    private bool _prevFire;
     void Update()
     {
         if (_controls.Gun.Stop.ReadBool())
@@ -29,10 +30,18 @@ public class GunPCInput : MonoBehaviour
         {
             _gunBehaviour.Reload();
         }
-        if (_controls.Gun.Fire.ReadBool())
+        var fire = _controls.Gun.Fire.ReadBool();
+        if (fire != _prevFire)
         {
-            _gunBehaviour.Fire();
-            Debug.Log("Fire");
+            if (fire)
+            {
+                _gunBehaviour.PressFire();
+            }
+            else
+            {
+                _gunBehaviour.ReleaseFire();
+            }
+            _prevFire = fire;
         }
 
     }
