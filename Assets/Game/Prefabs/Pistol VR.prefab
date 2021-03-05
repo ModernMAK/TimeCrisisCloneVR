@@ -910,12 +910,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6790094534537421350}
-  - component: {fileID: 6790094534537421351}
+  - component: {fileID: 7448839416642886507}
   - component: {fileID: 1537112243095657140}
   - component: {fileID: 7590180106480663602}
   - component: {fileID: 7516761328532531942}
   - component: {fileID: 7652000108574122260}
   - component: {fileID: 1566685427195809625}
+  - component: {fileID: 6974543844533149213}
+  - component: {fileID: 770649465935178628}
   m_Layer: 0
   m_Name: Pistol VR
   m_TagString: Untagged
@@ -938,10 +940,11 @@ Transform:
   - {fileID: 6790094532888155689}
   - {fileID: 3020202410703611188}
   - {fileID: 4307054598708836132}
+  - {fileID: 128038528474518446}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6790094534537421351
+--- !u!114 &7448839416642886507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -950,11 +953,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6790094534537421352}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fab9793227a41d0930941965070c196, type: 3}
+  m_Script: {fileID: 11500000, guid: c63ffd705ecb8d34681dc3be5a618abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gunData: {fileID: 11400000, guid: bdae6d2826f51b14181bb8c17b80f004, type: 2}
-  _transform: {fileID: 6790094533189176751}
+  _gunData: {fileID: 0}
+  _useRandomSpread: 0
 --- !u!114 &1537112243095657140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1014,6 +1017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4578e957f950fc54e8328d78fabf7055, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _magazine: {fileID: 0}
   _ammoText: {fileID: 6228902782556517277}
   _visualAmmoManagers:
   - {fileID: 7395248788227453924}
@@ -1092,6 +1096,33 @@ MonoBehaviour:
   highlightOnHover: 1
   hideHighlight: []
   hoverPriority: 0
+--- !u!114 &6974543844533149213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6790094534537421352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11af1c4802f54954c9ce66230ab7780a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rayTransform: {fileID: 0}
+--- !u!114 &770649465935178628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6790094534537421352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1038692a52b11154cb793a924b8d4ba4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxAmmo: 15
+  _currentAmmo: 0
 --- !u!1 &6975095524424265601
 GameObject:
   m_ObjectHideFlags: 0
@@ -10775,6 +10806,36 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7578239215142120875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 128038528474518446}
+  m_Layer: 0
+  m_Name: Raycaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &128038528474518446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7578239215142120875}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0625, z: 0.1375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6790094534537421350}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7750088758367753769
 GameObject:
   m_ObjectHideFlags: 0

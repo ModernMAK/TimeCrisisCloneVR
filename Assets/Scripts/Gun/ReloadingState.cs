@@ -22,7 +22,7 @@ public class ReloadingState : GunState
     public bool IsReloading => _isReloading;
     
     public bool CanReload(float lastActionTime) => Time.time - lastActionTime >= ReloadTime;
-    public void PerformReload(ref float lastActionTime, AmmoState ammoState)
+    public void PerformReload(ref float lastActionTime, GunMagazine ammoState)
     {
         if (IsReloading && CanReload(lastActionTime) && !ammoState.IsAmmoFull)
         {

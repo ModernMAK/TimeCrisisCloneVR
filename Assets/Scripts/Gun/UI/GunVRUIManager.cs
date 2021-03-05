@@ -3,38 +3,44 @@ using UnityEngine;
 
 public class GunVRUIManager : MonoBehaviour
 {
+    [SerializeField]
+    private GunMagazine _magazine;
     #pragma warning disable 649
     [SerializeField] private TMPro.TMP_Text _ammoText;
 
     [SerializeField] private VisualAmmoManager[] _visualAmmoManagers;
-    #pragma warning restore 649
-    // Start is called before the first frame update
-    void Start()
+#pragma warning restore 649
+	private void Awake()
+	{
+        if (_magazine == null)
+            _magazine = GetComponent<GunMagazine>();
+        if (_magazine == null)
+            enabled = false;
+    }
+	void Start()
     {
-     
-        var gun = GetComponent<IGun>();
-        Initialize(gun);
-        gun.AmmoState.MaxAmmoChanged += SetupVisualAmmos;
-        gun.AmmoState.CurrentAmmoChanged += UpdateAmmoText;
-        gun.AmmoState.CurrentAmmoChanged += UpdateVisualAmmos;
+        Initialize(_magazine);
+        _magazine.MaxAmmoChanged += SetupVisualAmmos;
+        _magazine.CurrentAmmoChanged += UpdateAmmoText;
+        _magazine.CurrentAmmoChanged += UpdateVisualAmmos;
         
     }
 
-    void Initialize(IGun gun)
+    void Initialize(GunMagazine magazine)
     {
-        TryUpdateText(_ammoText, gun.AmmoState.CurrentAmmo);
+        TryUpdateText(_ammoText, magazine.CurrentAmmo);
         foreach (var visualAmmo in _visualAmmoManagers)
         {
-            visualAmmo.ResizeIconCount(gun.AmmoState.MaxAmmo);
-            visualAmmo.SetActive(gun.AmmoState.MaxAmmo);
+            visualAmmo.ResizeIconCount(magazine.MaxAmmo);
+            visualAmmo.SetActive(magazine.MaxAmmo);
         }
     }
 
-    void SetupVisualAmmos(object sender, MaxAmmoChangedArgs args)
+    void SetupVisualAmmos(object sender, ChangedEventArgs<int> args)
     {
         foreach (var vAmmo in _visualAmmoManagers)
         {
-            vAmmo.ResizeIconCount(args.MaxAmmo);
+            vAmmo.ResizeIconCount(args.After);
         }
     }
     
@@ -50,12 +56,12 @@ public class GunVRUIManager : MonoBehaviour
         }
     }
 
-    void UpdateAmmoText(object sender, CurrentAmmoChangedArgs args) => TryUpdateText(_ammoText, args.CurrentAmmo);
-    void UpdateVisualAmmos(object sender, CurrentAmmoChangedArgs args)
+    void UpdateAmmoText(object sender, ChangedEventArgs<int> args) => TryUpdateText(_ammoText, args.After);
+    void UpdateVisualAmmos(object sender, ChangedEventArgs<int> args)
     {
         foreach (var visualAmmo in _visualAmmoManagers)
         {
-            visualAmmo.SetActive(args.CurrentAmmo);
+            visualAmmo.SetActive(args.After);
         }
     }
 }

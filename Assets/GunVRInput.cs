@@ -1,57 +1,55 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
-[RequireComponent(typeof(GunBehaviour))]
+[RequireComponent(typeof(IGun))]
 public class GunVRInput : MonoBehaviour
 {
-    
+
     [Header("SteamVR Bindings")]
     [SerializeField] private SteamVR_Action_Boolean _reloadAction;
     [SerializeField] private SteamVR_Action_Boolean _fireAction;
     [SerializeField] private SteamVR_Action_Boolean _stopAction;
-    
+
     [SerializeField]
     private Interactable _interactable;
-    
-    private GunBehaviour _gunBehaviour;
+
+    private IGun _gunBehaviour;
     public bool IsHeld => _interactable.attachedToHand != null;
     public SteamVR_Input_Sources Source => _interactable.attachedToHand.handType;
     private void Awake()
     {
-        if(_interactable == null)
+        if (_interactable == null)
             _interactable = GetComponent<Interactable>();
         if (_interactable == null)
             enabled = false;
-        _gunBehaviour = GetComponent<GunBehaviour>();
+        _gunBehaviour = GetComponent<IGun>();
     }
 
     void Update()
     {
-        if(!IsHeld)
+        if (!IsHeld)
             return;
-    
+
         if (_stopAction.GetState(Source))
         {
-            _gunBehaviour.ReloadingState.StopReloading();
+            _gunBehaviour.Stop();
         }
-        
         if (_reloadAction.GetState(Source))
-        {
-            _gunBehaviour.ReloadingState.StartReloading();
-        }
-        else if (_fireAction.GetState(Source))
-        {
-            _gunBehaviour.Fire();
-            _gunBehaviour.ReloadingState.StopReloading();
-        }
-        else if (_gunBehaviour.ReloadingState.IsReloading)
         {
             _gunBehaviour.Reload();
         }
-        
+        if (_fireAction.GetState(Source))
+        {
+            _gunBehaviour.Fire();
+        }
+
     }
+}
+
+
+public static class InputActionHelper
+{
+    public static bool ReadBool(this InputAction action, float threshold = 0.5f) => action.ReadValue<float>() >= threshold; 
 }

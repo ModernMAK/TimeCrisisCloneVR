@@ -9,4 +9,11 @@ public static class PropertyHelpers
         field = value;
         return didChange;
     }
+    public static bool UpdateValue<T>(ref T field, T value, out T old) where T : IEquatable<T>
+    {
+        var didChange = !field.Equals(value);
+        old = field;
+        field = value;
+        return didChange;
+    }
 }
