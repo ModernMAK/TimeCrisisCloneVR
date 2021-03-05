@@ -1,7 +1,20 @@
 using System;
 using UnityEngine;
 
+public interface IAmmoState
+{
+    public event EventHandler<ChangedEventArgs<int>> CurrentAmmoChanged;
+    public event EventHandler<ChangedEventArgs<int>> MaxAmmoChanged;
+    public int MaxAmmo    { get; set;    }
+
+    public int CurrentAmmo { get; set; }
+    public bool IsAmmoFull { get; }
+    public bool IsAmmoEmpty { get; }
+    public bool HasAmmo { get; }
+}
+
 [Serializable]
+[Obsolete]
 public class AmmoState : GunState
 {
     [SerializeField] private int _currentAmmo;

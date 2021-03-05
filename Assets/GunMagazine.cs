@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-public class GunMagazine : MonoBehaviour
+
+public class GunMagazine : MonoBehaviour, IAmmoState
 {
     [SerializeField] private int _maxAmmo = 1;
     [SerializeField] private int _currentAmmo = 0;
