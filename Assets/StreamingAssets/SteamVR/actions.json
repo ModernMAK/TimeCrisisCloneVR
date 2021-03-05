@@ -50,6 +50,14 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/PrimaryButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/SecondaryButton",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },
@@ -83,16 +91,37 @@
       "requirement": "optional"
     },
     {
-      "name": "/actions/shooter/in/Trigger",
+      "name": "/actions/gun/in/Grip",
+      "type": "vector1"
+    },
+    {
+      "name": "/actions/gun/in/Trigger",
+      "type": "vector1"
+    },
+    {
+      "name": "/actions/gun/in/PrimaryButton",
       "type": "boolean"
     },
     {
-      "name": "/actions/shooter/in/Reload",
+      "name": "/actions/gun/in/SecondaryButton",
       "type": "boolean"
     },
     {
-      "name": "/actions/shooter/in/Cancel",
+      "name": "/actions/gun/in/Fire",
+      "type": "boolean",
+      "requirement": "suggested"
+    },
+    {
+      "name": "/actions/gun/in/Stick",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/gun/in/StickDown",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/gun/out/Haptic",
+      "type": "vibration"
     }
   ],
   "action_sets": [
@@ -113,8 +142,8 @@
       "usage": "single"
     },
     {
-      "name": "/actions/shooter",
-      "usage": "leftright"
+      "name": "/actions/gun",
+      "usage": "single"
     }
   ],
   "default_bindings": [
