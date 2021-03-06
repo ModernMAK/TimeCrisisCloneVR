@@ -111,10 +111,12 @@ public class Gun : MonoBehaviour, IGun
 	{
 		_isFiring = true;
 		Fire();
+		_reloadingState.StopReloading();
 	}
 	public void ReleaseFire()
 	{
 		_isFiring = false;
+		_reloadingState.StopReloading();
 	}
 
 	public event EventHandler<FiredEventArgs> Fired;
