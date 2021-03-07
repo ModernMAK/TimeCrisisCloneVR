@@ -31,7 +31,6 @@ namespace Valve.VR.InteractionSystem
 
         protected Interactable interactable;
 
-        public bool HasMomentum => mappingChangeRate != 0f;
 
         protected virtual void Awake()
         {

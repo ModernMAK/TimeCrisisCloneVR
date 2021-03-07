@@ -22,7 +22,6 @@
       <Path>Library/PackageCache/com.unity.xr.management@3.2.16</Path>
       <Path>Library/PackageCache/com.unity.xr.oculus@1.4.3</Path>
       <Path>Library/PackageCache/com.unity.xr.oculus@1.6.1</Path>
-      <Path>Library/PackageCache/com.valvesoftware.unity.openvr@1.0.1</Path>
       <Path>Packages</Path>
       <Path>ProjectSettings</Path>
     </explicitIncludes>

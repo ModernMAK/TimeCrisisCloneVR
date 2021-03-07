@@ -9,9 +9,11 @@ public class ThrowToHand : MonoBehaviour
     [SerializeField] private SteamVR_Action_Boolean launch;
     [SerializeField] private SteamVR_Action_Boolean reset;
     [SerializeField] private Hand hand;
-   
-    [SerializeField] private float _arcTime = 1f;
-    [SerializeField] private float _lateralSpeed = 1f;
+
+    [SerializeField] private bool _useSpeed = true;
+    [SerializeField] private bool _useLateral = true;
+    [SerializeField] private float _arcTime = 0.75f;
+    [SerializeField] private float _speed = 2.5f;
     
     private Vector3 _originalPos;
     private Quaternion _originalRotation;
@@ -119,9 +121,16 @@ public class ThrowToHand : MonoBehaviour
 
         // var desiredV = (y / ty + xz);
         // var extraY = Vector3.zero;//Vector3.up * _additionalHeight;
-        var desiredV = GetProjectileMotionLateralSpeed(hand.objectAttachmentPoint.position, transform.position, _lateralSpeed);
+        var desiredV = 
+            _useSpeed ? 
+                (
+                    _useLateral ? 
+                    GetProjectileMotionLateralSpeed(hand.objectAttachmentPoint.position, transform.position, _speed) : 
+                    GetProjectileMotionVelocitySpeed(hand.objectAttachmentPoint.position,transform.position,_speed)
+                ) :
+                GetProjectileMotionTime(hand.objectAttachmentPoint.position, transform.position, _arcTime);
         // var desiredV = GetProjectileMotion(hand.objectAttachmentPoint.position, transform.position,_maxSpeed);
-        _rigidbody.AddForce(desiredV, ForceMode.VelocityChange);
-        
+        _rigidbody.velocity = desiredV;
+
     }
 }
