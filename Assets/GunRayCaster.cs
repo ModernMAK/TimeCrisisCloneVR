@@ -15,13 +15,22 @@ public class GunRayCaster : MonoBehaviour
         var rays = GetRays(1, cone, 2, useRandomSpread);
         return rays[0];
 	}
-    public Ray[] GetRays(int pellets, AimCone cone, int rings = 2, bool useRandomSpread = true)
+    public Ray[] GetRays(int pellets, AimCone cone, int rings = 2, bool useRandomSpread = true, bool includeFirstPellet = false)
     {
+        if(pellets <= 0)
+            return new Ray[0];
 
         var rays = new Ray[pellets];
         var rotation = Rotation;
         var position = Origin;
-        for (var p = 0; p < pellets; p++)
+        
+        var firstSpread = includeFirstPellet && useRandomSpread
+            ? AimCone.RandomSpread
+            : AimCone.GetUniformSpread(0, pellets, rings);
+        var firstForward = cone.CalculateSpreadedForward(firstSpread, rotation);
+        rays[0] = new Ray(position, firstForward);
+            
+        for (var p = 1; p < pellets; p++)
         {
             var spread = useRandomSpread
                 ? AimCone.RandomSpread
