@@ -40,6 +40,26 @@ public class GunRayCaster : MonoBehaviour
         }
         return rays;
     }
+    public Ray[] GetRays(int pellets, AimCone cone, float spreadRatio, int rings = 2)
+    {
+        if(pellets <= 0)
+            return new Ray[0];
+
+        var rays = new Ray[pellets];
+        var rotation = Rotation;
+        var position = Origin;
+        
+        for (var p = 0; p < pellets; p++)
+        {
+            var randomSpread = AimCone.RandomSpread;
+            var uniformSpread =  AimCone.GetUniformSpread(p, pellets, rings);
+            var spread = Vector2.Lerp(uniformSpread, randomSpread, spreadRatio);
+            
+            var forward = cone.CalculateSpreadedForward(spread, rotation);
+            rays[p] = new Ray(position, forward);
+        }
+        return rays;
+    }
 
     const float MaxBulletTravel = 1024f;
 

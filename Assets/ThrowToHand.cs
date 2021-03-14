@@ -4,6 +4,82 @@ using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
+public static class AngularVelocityHelper
+{
+    public static Vector3 CalculateVelocity(Quaternion target, Quaternion start, float time)
+    {
+        var deltaRotation = target * Quaternion.Inverse(start);
+        deltaRotation.ToAngleAxis(out var angleInDegrees, out var rotationAxis);
+ 
+        var angularDisplacement = rotationAxis * (angleInDegrees * Mathf.Deg2Rad);    
+        var angularSpeed = angularDisplacement / time;
+        // var 
+        
+        // btQuaternion diffQuater = gyroQuater - boxQuater;
+        // btQuaternion diffConjQuater;
+        // velQuater = ((diffQuater * 2) / d_time) * conjBoxQuater;
+        // var deltaRotation = Quaternion.
+        // var deltaEuler = deltaRotation.eulerAngles * Mathf.Deg2Rad;
+        // var velocity = deltaEuler / time;
+        return angularSpeed;
+    }
+}
+public static class ProjectileMotion
+{
+    
+    public static Vector3 CalculateVelocity(Vector3 delta, Vector3 gravity, float time)
+    {
+        return delta / time + -gravity * (0.5f * time);
+    }
+    public static Vector3 CalculateVelocityFromMaxSpeed(Vector3 target, Vector3 start, float speed = 1f)
+    {
+        var delta = (target - start);
+        var time = delta.magnitude / speed;
+        return CalculateVelocity(delta, Physics.gravity, time);
+    }
+    public static Vector3 CalculateVelocityFromTime(Vector3 target, Vector3 start, float time = 1f)
+    {
+        var delta = (target - start);
+        return CalculateVelocity(delta, Physics.gravity, time);
+    }
+    public static Vector3 CalculateVelocityFromMaxSpeedAndTime(Vector3 target, Vector3 start, float speed, float time, float blend = 0.5f)
+    {
+        var delta = (target - start);
+        var speedTime = delta.magnitude / speed;
+        var blendTime = Mathf.Lerp(speedTime, time, blend);
+        return CalculateVelocity(delta, Physics.gravity, blendTime);
+    }
+    public static float CalculateBlendedTime(Vector3 target, Vector3 start, float speed, float time, float blend = 0.5f)
+    {
+        var delta = (target - start);
+        var speedTime = delta.magnitude / speed;
+        var blendTime = Mathf.Lerp(speedTime, time, blend);
+        return blendTime;
+    }
+
+    
+    // private Vector3 CalculateVelocityFromMaxLateralSpeed(Vector3 target, Vector3 start, float lateralSpeed = 1f)
+    // {
+    //     Vector3 grav = Physics.gravity;
+    //     Vector3 delta = (target - start);
+    //     Vector3 deltaOffGrav = Vector3.ProjectOnPlane(delta,grav);
+    //     var time = deltaOffGrav.magnitude / lateralSpeed;
+    //     return CalculateVelocity(delta, grav, time);
+    // }
+    // private Vector3 GetProjectileMotionSmartLateralSpeed(Vector3 target, Vector3 start, float lateralSpeed = 1f)
+    // {
+    //     Vector3 grav = Physics.gravity;
+    //     Vector3 delta = (target - start);
+    //     Vector3 deltaOffGrav = Vector3.ProjectOnPlane(delta,grav);
+    //     Vector3 deltaOnGrav = Vector3.Project(delta,grav);
+    //     float time;
+    //     if (deltaOnGrav.sqrMagnitude > deltaOffGrav.sqrMagnitude)
+    //         time = delta.magnitude / lateralSpeed;
+    //     else
+    //         time = deltaOffGrav.magnitude / lateralSpeed;
+    //     return CalculateVelocity(delta, grav, time);
+    // }
+}
 public class ThrowToHand : MonoBehaviour
 {
     [SerializeField] private SteamVR_Action_Boolean launch;
@@ -11,7 +87,6 @@ public class ThrowToHand : MonoBehaviour
     [SerializeField] private Hand hand;
 
     [SerializeField] private bool _useSpeed = true;
-    [SerializeField] private bool _useLateral = true;
     [SerializeField] private float _arcTime = 0.75f;
     [SerializeField] private float _speed = 2.5f;
     
@@ -44,92 +119,14 @@ public class ThrowToHand : MonoBehaviour
 
     }
 
-    // private Vector3 GetProjectileMotion(Vector3 target, Vector3 start, float angleDeg)
-    // {
-    //     Vector3 dir = target - start; // get Target Direction
-    //     float height = dir.y; // get height difference
-    //     dir.y = 0; // retain only the horizontal difference
-    //     float dist = dir.magnitude; // get horizontal direction
-    //     float a = angleDeg * Mathf.Deg2Rad; // Convert angle to radians
-    //     dir.y = dist * Mathf.Tan(a); // set dir to the elevation angle.
-    //     dist += height / Mathf.Tan(a); // Correction for small height differences
-    //
-    //     // Calculate the velocity magnitude
-    //     float velocity = Mathf.Sqrt(dist * Physics.gravity.magnitude / Mathf.Sin(2 * a));
-    //     return velocity * dir.normalized; 
-    // }
-    private Vector3 GetProjectileMotionVelocitySpeed(Vector3 target, Vector3 start, float speed = 1f)
-    {
-        // var delta = target - start;
-        // var groundDelta = Vector3.ProjectOnPlane(delta, Vector3.forward);
-        // var rot= Quaternion.FromToRotation(groundDelta.normalized,delta.normalized);
-        // return GetProjectileMotion(target, start, rot.eulerAngles.y);
-        
-        Vector3 delta = (target - start);
-        var time = delta.magnitude / speed;
-        return GetProjectileMotion(delta, Physics.gravity, time);
-    }
-    private Vector3 GetProjectileMotionTime(Vector3 target, Vector3 start, float time = 1f)
-    {
-        // var delta = target - start;
-        // var groundDelta = Vector3.ProjectOnPlane(delta, Vector3.forward);
-        // var rot= Quaternion.FromToRotation(groundDelta.normalized,delta.normalized);
-        // return GetProjectileMotion(target, start, rot.eulerAngles.y);
-        
-        Vector3 delta = (target - start);
-        return GetProjectileMotion(delta, Physics.gravity, time);
-    }
-
-    
-    private Vector3 GetProjectileMotionLateralSpeed(Vector3 target, Vector3 start, float lateralSpeed = 1f)
-    {
-        Vector3 grav = Physics.gravity;
-        Vector3 delta = (target - start);
-        Vector3 deltaOffGrav = Vector3.ProjectOnPlane(delta,grav);
-        var time = deltaOffGrav.magnitude / lateralSpeed;
-        return GetProjectileMotion(delta, grav, time);
-    }
-    private Vector3 GetProjectileMotion(Vector3 delta, Vector3 grav, float time)
-    {
-        return delta / time + -grav * (0.5f * time);
-    }
     void LaunchToHand()
     {
-        // var delta = hand.transform.position - transform.position;
-        // var yTime = Mathf.Sqrt(delta.y / Physics.gravity.y);
-        //
-        // var desiredV = Vector3.up * yTime * Physics.gravity.y + delta;
-        //
-        
-        // var p1 = Vector3.zero;
-        // var p2 = hand.transform.position - transform.position;
-        //
-        // var dY = p2.y;
-        // var dXZ = new Vector2(p2.x,p2.z);
-        //
-        // var time = sqrt(2 * (P2.y - P1.y*P2.x/P1.x)/(g.y*(1 - P1.x/P2.x)))
-        // //v = P2/t2 - t2 * g/2;
-        //
-        // var start = transform.position;
-        // var dest = hand.transform.position;
-        // var delta = dest - start;
-        // var xz = Vector3.ProjectOnPlane(delta, Vector3.up);
-        // var y = Vector3.Project(delta, Vector3.up);
-        // var ty = y.y / 9.8f; //Gravity (m / (m/s) = s)
-        // Debug.Log(ty);
-        //
-
-        // var desiredV = (y / ty + xz);
-        // var extraY = Vector3.zero;//Vector3.up * _additionalHeight;
-        var desiredV = 
-            _useSpeed ? 
-                (
-                    _useLateral ? 
-                    GetProjectileMotionLateralSpeed(hand.objectAttachmentPoint.position, transform.position, _speed) : 
-                    GetProjectileMotionVelocitySpeed(hand.objectAttachmentPoint.position,transform.position,_speed)
-                ) :
-                GetProjectileMotionTime(hand.objectAttachmentPoint.position, transform.position, _arcTime);
-        // var desiredV = GetProjectileMotion(hand.objectAttachmentPoint.position, transform.position,_maxSpeed);
+        var target = hand.objectAttachmentPoint.position;
+        var start = transform.position;
+        var desiredV =
+            _useSpeed
+                ? ProjectileMotion.CalculateVelocityFromMaxSpeed(target, start, _speed)
+                : ProjectileMotion.CalculateVelocityFromTime(target, start, _arcTime);
         _rigidbody.velocity = desiredV;
 
     }

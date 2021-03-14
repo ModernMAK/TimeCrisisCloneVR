@@ -26,8 +26,11 @@ public class Gun : MonoBehaviour, IGun
 	private AimCone _aimCone;
 	private FiringInfo _firingInfo;
 	private float _lastAction;
+	private float _spreadRatio;
 	private bool _isFiring;
 
+	[SerializeField]
+	private float _force;
 	private void Awake()
 	{
 		_magazine = GetComponent<GunMagazine>();
@@ -57,6 +60,8 @@ public class Gun : MonoBehaviour, IGun
 			_reloadingState.PerformReload(ref _lastAction, Magazine);
 		else if (_isFiring)
 			Fire();
+		if (_spreadRatio > 0f)
+			_spreadRatio -= _firingInfo.SpreadRecovery * Time.deltaTime;
 	}
 	public void Stop()
 	{
@@ -83,7 +88,8 @@ public class Gun : MonoBehaviour, IGun
 			}
 			else
 			{
-				_debugs = _rayCaster.GetRays(_firingInfo.Pellets, _aimCone, 2, _useRandomSpread);
+				var clampedRatio = Mathf.Clamp01(_spreadRatio);
+				_debugs = _rayCaster.GetRays(_firingInfo.Pellets, _aimCone, clampedRatio, 2);
 				foreach (var ray in _debugs)
 					if (_rayCaster.Cast(ray, out var hitInfo))
 						if (hitInfo.rigidbody != null)
@@ -93,6 +99,7 @@ public class Gun : MonoBehaviour, IGun
 							{
 								shootable.TakeShot(hitInfo.point, ray.direction, hitInfo.normal);
 							}
+							hitInfo.rigidbody.AddForceAtPosition(ray.direction * _force,hitInfo.point,ForceMode.Impulse);
 						}
 				if (!_firingInfo.AllowAutoFire)
 					_isFiring = false;
@@ -103,6 +110,7 @@ public class Gun : MonoBehaviour, IGun
 					_reloadingState.StopReloading();
 				}
 				LastAction = Time.time;
+				_spreadRatio += _firingInfo.SpreadGain + Time.deltaTime * _firingInfo.SpreadRecovery;
 
 			}
 		}

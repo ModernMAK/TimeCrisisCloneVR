@@ -23,3 +23,6 @@ MonoBehaviour:
   _firingInfo:
     _fireCooldown: 0.08
     _pellets: 1
+    _allowAutofire: 1
+    _timeToSpread: 0.8
+    _timeToRecover: 2
