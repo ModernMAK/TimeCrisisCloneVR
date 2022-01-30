@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Void Shooting Range.unity
+    guid: eb7a7eb188abf834580ff33a49b3b3cb
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b5632d48380f0fe4daca0911f7bd7caa, type: 2}
     Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: e077871798550694197c4be358dff801, type: 2}
